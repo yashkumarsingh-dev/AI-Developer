@@ -71,7 +71,6 @@ export const profileController = async (req, res) => {
 
 }
 
-
 export const logoutController = async (req, res) => {
     try {
 
