@@ -18,6 +18,7 @@ const Project = () => {
     const messageBox = React.createRef()
 
     const [ users, setUsers ] = useState([])
+    const [ messages, setMessages ] = useState([]) // New state variable for messages
 
     const handleUserClick = (id) => {
         setSelectedUserId(prevSelectedUserId => {
@@ -56,9 +57,7 @@ const Project = () => {
             message,
             sender: user
         })
-
-        appendOutgoingMessage(message)
-
+        setMessages(prevMessages => [ ...prevMessages, { sender: user, message } ]) // Update messages state
         setMessage("")
 
     }
@@ -69,8 +68,7 @@ const Project = () => {
 
 
         receiveMessage('project-message', data => {
-            console.log(data)
-            appendIncomingMessage(data)
+            setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
         })
 
 
@@ -94,43 +92,7 @@ const Project = () => {
     }, [])
 
 
-    function appendIncomingMessage(messageObject) {
-
-        const messageBox = document.querySelector('.message-box')
-
-        const message = document.createElement('div')
-        message.classList.add('message', 'max-w-56', 'flex', 'flex-col', 'p-2', 'bg-slate-50', 'w-fit', 'rounded-md')
-
-        if (messageObject.sender._id === 'ai') {
-
-            const markDown = (<Markdown>{messageObject.message}</Markdown>)
-            message.innerHTML = `
-            <small class='opacity-65text-xs'>${messageObject.sender.email}</small>
-            <p class='text-sm'>${markDown}</p>
-            `
-        } else {
-            message.innerHTML = `
-            <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
-            <p class='text-sm'>${messageObject.message}</p>
-            `
-            messageBox.appendChild(message)
-        }
-        scrollToBottom()
-    }
-
-    function appendOutgoingMessage(message) {
-
-        const messageBox = document.querySelector('.message-box')
-
-        const newMessage = document.createElement('div')
-        newMessage.classList.add('ml-auto', 'max-w-56', 'message', 'flex', 'flex-col', 'p-2', 'bg-slate-50', 'w-fit', 'rounded-md')
-        newMessage.innerHTML = `
-                    <small class='opacity-65 text-xs'>${user.email}</small>
-                    <p class='text-sm'>${message}</p>
-                `
-        messageBox.appendChild(newMessage)
-        scrollToBottom()
-    }
+    // Removed appendIncomingMessage and appendOutgoingMessage functions
 
     function scrollToBottom() {
         messageBox.current.scrollTop = messageBox.current.scrollHeight
@@ -153,6 +115,21 @@ const Project = () => {
                     <div
                         ref={messageBox}
                         className="message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'ml-auto max-w-54'}  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
+                                <small className='opacity-65 text-xs'>{msg.sender.email}</small>
+                                <p className='text-sm'>
+                                    {msg.sender._id === 'ai' ?
+
+                                        <div
+                                            className='overflow-auto bg-slate-950 text-white rounded-sm p-2'
+                                        >
+                                            <Markdown>{msg.message}</Markdown>
+                                        </div>
+                                        : msg.message}
+                                </p>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="inputField w-full flex absolute bottom-0">
