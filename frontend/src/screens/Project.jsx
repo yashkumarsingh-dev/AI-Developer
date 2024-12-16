@@ -1,9 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { UserContext } from '../context/user.context'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
+import { use } from 'react'
+
+function SyntaxHighlightedCode(props) {
+    const ref = useRef(null)
+
+    React.useEffect(() => {
+        if (ref.current && props.className?.includes('lang-') && window.hljs) {
+            window.hljs.highlightElement(ref.current)
+
+            // hljs won't reprocess the element unless this attribute is removed
+            ref.current.removeAttribute('data-highlighted')
+        }
+    }, [ props.className, props.children ])
+
+    return <code {...props} ref={ref} />
+}
+
+
+
+
 
 const Project = () => {
 
@@ -11,7 +31,7 @@ const Project = () => {
 
     const [ isSidePanelOpen, setIsSidePanelOpen ] = useState(false)
     const [ isModalOpen, setIsModalOpen ] = useState(false)
-    const [ selectedUserId, setSelectedUserId ] = useState([])
+    const [ selectedUserId, setSelectedUserId ] = useState(new Set()) // Initialized as Set
     const [ project, setProject ] = useState(location.state.project)
     const [ message, setMessage ] = useState('')
     const { user } = useContext(UserContext)
@@ -124,7 +144,14 @@ const Project = () => {
                                         <div
                                             className='overflow-auto bg-slate-950 text-white rounded-sm p-2'
                                         >
-                                            <Markdown>{msg.message}</Markdown>
+                                            <Markdown
+                                                children={msg.message}
+                                                options={{
+                                                    overrides: {
+                                                        code: SyntaxHighlightedCode,
+                                                    },
+                                                }}
+                                            />
                                         </div>
                                         : msg.message}
                                 </p>
