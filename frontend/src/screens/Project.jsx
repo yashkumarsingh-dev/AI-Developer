@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
-import { use } from 'react'
+import hljs from 'highlight.js';
 
 function SyntaxHighlightedCode(props) {
     const ref = useRef(null)
@@ -111,6 +111,8 @@ const Project = () => {
 
             const message = JSON.parse(data.message)
 
+            console.log(message)
+
             if (message.fileTree) {
                 setFileTree(message.fileTree)
             }
@@ -148,7 +150,7 @@ const Project = () => {
     return (
         <main className='h-screen w-screen flex'>
             <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
-                <header className='flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute top-0'>
+                <header className='flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute z-10 top-0'>
                     <button className='flex gap-2' onClick={() => setIsModalOpen(true)}>
                         <i className="ri-add-fill mr-1"></i>
                         <p>Add collaborator</p>
@@ -165,11 +167,11 @@ const Project = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-54'} ${msg.sender._id == user._id.toString() && 'ml-auto'}  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
                                 <small className='opacity-65 text-xs'>{msg.sender.email}</small>
-                                <p className='text-sm'>
+                                <div className='text-sm'>
                                     {msg.sender._id === 'ai' ?
                                         WriteAiMessage(msg.message)
-                                        : msg.message}
-                                </p>
+                                        : <p>{msg.message}</p>}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -215,13 +217,14 @@ const Project = () => {
                 </div>
             </section>
 
-            <section className="right bg-red-50 flex-grow h-full flex">
+            <section className="right  bg-red-50 flex-grow h-full flex">
 
                 <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
                     <div className="file-tree w-full">
                         {
                             Object.keys(fileTree).map((file, index) => (
                                 <button
+                                    key={index}
                                     onClick={() => {
                                         setCurrentFile(file)
                                         setOpenFiles([ ...new Set([ ...openFiles, file ]) ])
@@ -238,12 +241,13 @@ const Project = () => {
                 </div>
 
                 {currentFile && (
-                    <div className="code-editor flex flex-col flex-grow h-full">
+                    <div className="code-editor flex flex-col flex-grow h-full shrink">
 
                         <div className="top flex">
                             {
                                 openFiles.map((file, index) => (
                                     <button
+                                        key={index}
                                         onClick={() => setCurrentFile(file)}
                                         className={`open-file cursor-pointer p-2 px-4 flex items-center w-fit gap-2 bg-slate-300 ${currentFile === file ? 'bg-slate-400' : ''}`}>
                                         <p
@@ -253,21 +257,35 @@ const Project = () => {
                                 ))
                             }
                         </div>
-                        <div className="bottom flex flex-grow">
+                        <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
                             {
                                 fileTree[ currentFile ] && (
-                                    <textarea
-                                        value={fileTree[ currentFile ].content}
-                                        onChange={(e) => {
-                                            setFileTree({
-                                                ...fileTree,
-                                                [ currentFile ]: {
-                                                    content: e.target.value
-                                                }
-                                            })
-                                        }}
-                                        className='w-full h-full p-4 bg-slate-50 outline-none border-none'
-                                    ></textarea>
+                                    <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
+                                        <pre
+                                            className="hljs h-full">
+                                            <code
+                                                className="hljs h-full outline-none"
+                                                contentEditable
+                                                suppressContentEditableWarning
+                                                onBlur={(e) => {
+                                                    const updatedContent = e.target.innerText;
+                                                    setFileTree(prevFileTree => ({
+                                                        ...prevFileTree,
+                                                        [ currentFile ]: {
+                                                            ...prevFileTree[ currentFile ],
+                                                            content: updatedContent
+                                                        }
+                                                    }));
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].content).value }}
+                                                style={{
+                                                    whiteSpace: 'pre-wrap',
+                                                    paddingBottom: '25rem',
+                                                    counterSet: 'line-numbering',
+                                                }}
+                                            />
+                                        </pre>
+                                    </div>
                                 )
                             }
                         </div>
