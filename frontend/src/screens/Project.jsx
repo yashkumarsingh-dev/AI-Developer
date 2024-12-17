@@ -5,6 +5,7 @@ import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
+import { getWebContainer } from '../config/webcontainer'
 
 function SyntaxHighlightedCode(props) {
     const ref = useRef(null)
@@ -40,6 +41,8 @@ const Project = () => {
 
     const [ currentFile, setCurrentFile ] = useState(null)
     const [ openFiles, setOpenFiles ] = useState([])
+
+    const [ webContainer, setWebContainer ] = useState(null)
 
     const handleUserClick = (id) => {
         setSelectedUserId(prevSelectedUserId => {
@@ -106,12 +109,21 @@ const Project = () => {
 
         initializeSocket(project._id)
 
+        if (!webContainer) {
+            getWebContainer().then(container => {
+                setWebContainer(container)
+                console.log("container started")
+            })
+        }
+
 
         receiveMessage('project-message', data => {
 
             const message = JSON.parse(data.message)
 
             console.log(message)
+
+            webContainer?.mount(message.fileTree)
 
             if (message.fileTree) {
                 setFileTree(message.fileTree)
@@ -277,7 +289,7 @@ const Project = () => {
                                                         }
                                                     }));
                                                 }}
-                                                dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].content).value }}
+                                                dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].file.contents).value }}
                                                 style={{
                                                     whiteSpace: 'pre-wrap',
                                                     paddingBottom: '25rem',

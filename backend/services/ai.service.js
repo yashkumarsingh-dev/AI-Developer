@@ -15,67 +15,68 @@ const model = genAI.getGenerativeModel({
  
 
     user:Create an express application 
-    response:{
-    
-    "text":"this is you fileTree structure of the express server".
-    "fileTree":{
-    "app.js":{
-    content:"
-    const express = require('express');
+   response: {
 
-const app = express();
+    "text": "this is you fileTree structure of the express server".
+    "fileTree": {
+        "app.js": {
+            file: {
+                contents: "
+                const express = require('express');
 
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+                const app = express();
 
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-})
-    "
+                app.get('/', (req, res) => {
+                    res.send('Hello World!');
+                });
+
+
+                app.listen(3000, () => {
+                    console.log('Server is running on port 3000');
+                })
+                "
+            
+        },
+
+        "package.json": {
+            file: {
+                contents: "
+                {
+                    "name": "temp-server",
+                        "version": "1.0.0",
+                            "main": "index.js",
+                                "scripts": {
+                        "test": "echo \"Error: no test specified\" && exit 1"
+                    },
+                    "keywords": [],
+                        "author": "",
+                            "license": "ISC",
+                                "description": "",
+                                    "dependencies": {
+                        "express": "^4.21.2"
+                    }
+                }
+
+
+
+                ",
+
+            },
+
+        },
+
+    },
+    "buildCommand": {
+        mainItem: "npm",
+            commands: [ "install" ]
     },
 
-    "package.json":{
-
-    content:"
-    {
-  "name": "temp-server",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "express": "^4.21.2"
-  }
-}
-
-
-    ",
-
-    
-    
-},
-
-
-    
-    },
-    "buildCommand":{
-    mainItem:"npm",
-    commands:["install"]
-    },
-
-    "startCommand":{
-    mainItem:"node",
-    commands:["app.js"]
-}
+    "startCommand": {
+        mainItem: "node",
+            commands: [ "app.js" ]
     }
+}
     </example>
 
 
