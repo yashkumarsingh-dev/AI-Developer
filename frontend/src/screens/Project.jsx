@@ -22,9 +22,6 @@ function SyntaxHighlightedCode(props) {
 }
 
 
-
-
-
 const Project = () => {
 
     const location = useLocation()
@@ -39,16 +36,7 @@ const Project = () => {
 
     const [ users, setUsers ] = useState([])
     const [ messages, setMessages ] = useState([]) // New state variable for messages
-    const [ fileTree, setFileTree ] = useState({
-        "app.js": {
-            content: `const express = require('express');`
-        },
-        "package.json": {
-            content: `{
-                        "name": "temp-server",
-                        }`
-        }
-    })
+    const [ fileTree, setFileTree ] = useState({})
 
     const [ currentFile, setCurrentFile ] = useState(null)
     const [ openFiles, setOpenFiles ] = useState([])
@@ -120,6 +108,13 @@ const Project = () => {
 
 
         receiveMessage('project-message', data => {
+
+            const message = JSON.parse(data.message)
+
+            if (message.fileTree) {
+                setFileTree(message.fileTree)
+            }
+
             setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
         })
 

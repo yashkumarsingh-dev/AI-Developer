@@ -13,7 +13,7 @@ const model = genAI.getGenerativeModel({
 
     <example>
  
-    
+
     user:Create an express application 
     response:{
     
@@ -59,6 +59,13 @@ app.listen(3000, () => {
 
     ",
 
+    
+    
+},
+
+
+    
+    },
     "buildCommand":{
     mainItem:"npm",
     commands:["install"]
@@ -68,10 +75,6 @@ app.listen(3000, () => {
     mainItem:"node",
     commands:["app.js"]
 }
-    
-}
-    
-    }
     }
     </example>
 
