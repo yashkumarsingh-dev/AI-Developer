@@ -39,6 +39,19 @@ const Project = () => {
 
     const [ users, setUsers ] = useState([])
     const [ messages, setMessages ] = useState([]) // New state variable for messages
+    const [ fileTree, setFileTree ] = useState({
+        "app.js": {
+            content: `const express = require('express');`
+        },
+        "package.json": {
+            content: `{
+                        "name": "temp-server",
+                        }`
+        }
+    })
+
+    const [ currentFile, setCurrentFile ] = useState(null)
+    const [ openFiles, setOpenFiles ] = useState([])
 
     const handleUserClick = (id) => {
         setSelectedUserId(prevSelectedUserId => {
@@ -206,6 +219,69 @@ const Project = () => {
                     </div>
                 </div>
             </section>
+
+            <section className="right bg-red-50 flex-grow h-full flex">
+
+                <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
+                    <div className="file-tree w-full">
+                        {
+                            Object.keys(fileTree).map((file, index) => (
+                                <button
+                                    onClick={() => {
+                                        setCurrentFile(file)
+                                        setOpenFiles([ ...new Set([ ...openFiles, file ]) ])
+                                    }}
+                                    className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-slate-300 w-full">
+                                    <p
+                                        className='font-semibold text-lg'
+                                    >{file}</p>
+                                </button>))
+
+                        }
+                    </div>
+
+                </div>
+
+                {currentFile && (
+                    <div className="code-editor flex flex-col flex-grow h-full">
+
+                        <div className="top flex">
+                            {
+                                openFiles.map((file, index) => (
+                                    <button
+                                        onClick={() => setCurrentFile(file)}
+                                        className={`open-file cursor-pointer p-2 px-4 flex items-center w-fit gap-2 bg-slate-300 ${currentFile === file ? 'bg-slate-400' : ''}`}>
+                                        <p
+                                            className='font-semibold text-lg'
+                                        >{file}</p>
+                                    </button>
+                                ))
+                            }
+                        </div>
+                        <div className="bottom flex flex-grow">
+                            {
+                                fileTree[ currentFile ] && (
+                                    <textarea
+                                        value={fileTree[ currentFile ].content}
+                                        onChange={(e) => {
+                                            setFileTree({
+                                                ...fileTree,
+                                                [ currentFile ]: {
+                                                    content: e.target.value
+                                                }
+                                            })
+                                        }}
+                                        className='w-full h-full p-4 bg-slate-50 outline-none border-none'
+                                    ></textarea>
+                                )
+                            }
+                        </div>
+
+                    </div>
+                )}
+
+            </section>
+
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
