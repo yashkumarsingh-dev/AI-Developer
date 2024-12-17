@@ -119,6 +119,8 @@ const Project = () => {
 
         receiveMessage('project-message', data => {
 
+            console.log(data)
+
             const message = JSON.parse(data.message)
 
             console.log(message)
@@ -252,10 +254,12 @@ const Project = () => {
 
                 </div>
 
-                {currentFile && (
-                    <div className="code-editor flex flex-col flex-grow h-full shrink">
 
-                        <div className="top flex">
+                <div className="code-editor flex flex-col flex-grow h-full shrink">
+
+                    <div className="top flex justify-between w-full">
+
+                        <div className="files flex">
                             {
                                 openFiles.map((file, index) => (
                                     <button
@@ -269,41 +273,75 @@ const Project = () => {
                                 ))
                             }
                         </div>
-                        <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
-                            {
-                                fileTree[ currentFile ] && (
-                                    <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
-                                        <pre
-                                            className="hljs h-full">
-                                            <code
-                                                className="hljs h-full outline-none"
-                                                contentEditable
-                                                suppressContentEditableWarning
-                                                onBlur={(e) => {
-                                                    const updatedContent = e.target.innerText;
-                                                    setFileTree(prevFileTree => ({
-                                                        ...prevFileTree,
-                                                        [ currentFile ]: {
-                                                            ...prevFileTree[ currentFile ],
-                                                            content: updatedContent
-                                                        }
-                                                    }));
-                                                }}
-                                                dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].file.contents).value }}
-                                                style={{
-                                                    whiteSpace: 'pre-wrap',
-                                                    paddingBottom: '25rem',
-                                                    counterSet: 'line-numbering',
-                                                }}
-                                            />
-                                        </pre>
-                                    </div>
-                                )
-                            }
-                        </div>
 
+                        <div className="actions flex gap-2">
+                            <button
+                                onClick={async () => {
+                                    await webContainer.mount(fileTree)
+                                    
+                                    
+                                    const installProcess = await webContainer.spawn("npm", [ "install" ])
+
+                                    
+                                    
+                                    installProcess.output.pipeTo(new WritableStream({
+                                        write(chunk) {
+                                            console.log(chunk)
+                                        }
+                                    }))
+
+                                    const runProcess = await webContainer.spawn("npm", [ "start" ])
+
+                                    runProcess.output.pipeTo(new WritableStream({
+                                        write(chunk) {
+                                            console.log(chunk)
+                                        }
+                                    }))
+
+                                }}
+                                className='p-2 px-4 bg-slate-300 text-white'
+                            >
+                                run
+                            </button>
+
+
+                        </div>
                     </div>
-                )}
+                    <div className="bottom flex flex-grow max-w-full shrink overflow-auto">
+                        {
+                            fileTree[ currentFile ] && (
+                                <div className="code-editor-area h-full overflow-auto flex-grow bg-slate-50">
+                                    <pre
+                                        className="hljs h-full">
+                                        <code
+                                            className="hljs h-full outline-none"
+                                            contentEditable
+                                            suppressContentEditableWarning
+                                            onBlur={(e) => {
+                                                const updatedContent = e.target.innerText;
+                                                setFileTree(prevFileTree => ({
+                                                    ...prevFileTree,
+                                                    [ currentFile ]: {
+                                                        ...prevFileTree[ currentFile ],
+                                                        content: updatedContent
+                                                    }
+                                                }));
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: hljs.highlight('javascript', fileTree[ currentFile ].file.contents).value }}
+                                            style={{
+                                                whiteSpace: 'pre-wrap',
+                                                paddingBottom: '25rem',
+                                                counterSet: 'line-numbering',
+                                            }}
+                                        />
+                                    </pre>
+                                </div>
+                            )
+                        }
+                    </div>
+
+                </div>
+
 
             </section>
 
