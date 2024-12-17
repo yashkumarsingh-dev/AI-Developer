@@ -15,7 +15,11 @@ const projectSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user'
         }
-    ]
+    ],
+    fileTree: {
+        type: Object,
+        default: {}
+    },
 
 })
 
