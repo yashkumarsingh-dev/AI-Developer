@@ -124,18 +124,25 @@ const Project = () => {
         receiveMessage('project-message', data => {
 
             console.log(data)
+            
+            if (data.sender._id == 'ai') {
 
-            const message = JSON.parse(data.message)
 
-            console.log(message)
+                const message = JSON.parse(data.message)
 
-            webContainer?.mount(message.fileTree)
+                console.log(message)
 
-            if (message.fileTree) {
-                setFileTree(message.fileTree)
+                webContainer?.mount(message.fileTree)
+
+                if (message.fileTree) {
+                    setFileTree(message.fileTree || {})
+                }
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
+            } else {
+
+
+                setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
             }
-
-            setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
         })
 
 
@@ -144,7 +151,7 @@ const Project = () => {
             console.log(res.data.project)
 
             setProject(res.data.project)
-            setFileTree(res.data.project.fileTree)
+            setFileTree(res.data.project.fileTree || {})
         })
 
         axios.get('/users/all').then(res => {
