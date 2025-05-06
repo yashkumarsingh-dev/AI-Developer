@@ -7,7 +7,7 @@ const Home = () => {
 
     const { user } = useContext(UserContext)
     const [ isModalOpen, setIsModalOpen ] = useState(false)
-    const [ projectName, setProjectName ] = useState(null)
+    const [ projectName, setProjectName ] = useState('')
     const [ project, setProject ] = useState([])
 
     const navigate = useNavigate()
