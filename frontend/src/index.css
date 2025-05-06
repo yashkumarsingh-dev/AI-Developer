@@ -14,9 +14,9 @@ body {
   width: 100%;
 }
 
-.message-box{
+.message-box {
   scroll-behavior: smooth;
 }
-.message-box::-webkit-scrollbar{
+.message-box::-webkit-scrollbar {
   display: none;
 }

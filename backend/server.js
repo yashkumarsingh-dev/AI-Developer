@@ -26,7 +26,6 @@ io.use(async (socket, next) => {
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return next(new Error("Invalid projectId"));
     }
-
     socket.project = await projectModel.findById(projectId);
 
     if (!token) {
