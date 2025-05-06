@@ -47,25 +47,25 @@ This project aims to enhance developer collaboration through a smart chat interf
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/ai-mern-chat-app.git
-cd ai-mern-chat-app
+git clone https://github.com/your-username/AI-Developer.git
+cd AI-Developer
 ```
 
 2. **Install backend dependencies**
 ```bash
-cd server
-yarn install
+cd backend
+npm install
 ```
 
 3. **Install frontend dependencies**
 ```bash
-cd ../client
-yarn install
+cd ../frontend
+npm install
 ```
 
 4. **Set up environment variables**
 
-Create a `.env` file inside `server/` and add:
+Create a `.env` file inside `backend/` and add:
 ```
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
@@ -75,24 +75,14 @@ GEMINI_API_KEY=your_google_gemini_api_key
 
 5. **Run backend and frontend**
 ```bash
-# In /server
-yarn dev
+# In /backend (open new terminal)
+cd backend
+node server.js
 
-# In /client (open new terminal)
-yarn start
+# In /frontend (open new terminal)
+cd frontend
+npm run dev
 ```
-
----
-
-## 🖼️ Screenshots
-
-### 👤 User Interface
-
-![Chat UI](screenshots/chat-ui.png)
-
-### 🤖 AI Assistant
-
-![AI Response](screenshots/ai-response.png)
 
 ---
 
