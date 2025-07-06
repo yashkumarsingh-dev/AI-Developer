@@ -12,6 +12,10 @@ html,
 body {
   height: 100%;
   width: 100%;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: linear-gradient(120deg, #10101a 0%, #35343b 100%);
+  color: #e0e6f0; 
 }
 
 .message-box {
